@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureMedis - Interactive Portal</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            50: '#E6F7F7',
+                            100: '#C2EDEE',
+                            500: '#00A3A3',
+                            600: '#007F7F',
+                            700: '#005C5C',
+                            900: '#003636',
+                        },
+                        darkBg: '#091515',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at bottom left, #122d2d, #091515);
+            min-height: 100vh;
+            color: #E2E8F0;
+        }
+
+        .glass-card {
+            background: rgba(13, 31, 31, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 163, 163, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 163, 163, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px 0 rgba(0, 163, 163, 0.15);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 15px rgba(0, 163, 163, 0.6);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 163, 163, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(0, 163, 163, 0.6); }
+        }
+        .glow-button {
+            animation: pulse-glow 3s infinite;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12 flex flex-col justify-between">
+
+    <!-- Top Navigation / Brand -->
+    <header class="max-w-6xl mx-auto w-full mb-12 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-medical-500/20 flex items-center justify-center border border-medical-500/40 text-xl">
+                🛡️
+            </div>
+            <div>
+                <span class="text-xl font-bold text-white tracking-tight glow-text">SecureMedis</span>
+                <span class="text-[10px] block text-medical-500 font-semibold tracking-widest uppercase">Portal Keamanan Rekam Medis</span>
+            </div>
+        </div>
+        <div class="text-xs text-gray-500 font-mono">
+            V1.0.0 Stable
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto w-full my-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        
+        <!-- Left: Portal Intro -->
+        <div class="flex flex-col gap-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-medical-500/10 border border-medical-500/25 text-xs text-medical-100 w-fit">
+                🚀 Media Presentasi & Simulasi
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                Sistem Pengamanan <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-medical-500 to-teal-300">Rekam Medis Digital</span>
+            </h1>
+            <p class="text-gray-400 text-sm md:text-base leading-relaxed">
+                Platform edukasi dan visualisasi interaktif untuk mendemonstrasikan algoritma kriptografi <strong>Camellia-128</strong>, hashing <strong>BCrypt</strong>, dan integrasi database <strong>Supabase</strong> dalam mengamankan data pasien.
+            </p>
+            
+            <div class="flex flex-wrap gap-4 mt-2">
+                <div class="flex items-center gap-2 text-xs text-gray-400">
+                    <span class="text-medical-500">✔</span> Camellia-128 CBC
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-400">
+                    <span class="text-medical-500">✔</span> BCrypt Hash
+                </div>
+                <div class="flex items-center gap-2 text-xs text-gray-400">
+                    <span class="text-medical-500">✔</span> Supabase Cloud integration
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Action Cards -->
+        <div class="grid grid-cols-1 gap-6">
+            
+            <!-- Card 1: Slides & Feistel Animator (Presentation) -->
+            <a href="securemedis_presentation.html" class="glass-card rounded-2xl p-6 block text-left group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-medical-500/15 flex items-center justify-center text-2xl border border-medical-500/20 group-hover:bg-medical-500 group-hover:text-white transition duration-300">
+                        📊
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-medical-500/20 text-medical-100 border border-medical-500/30">REKOMENDASI</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2 group-hover:text-medical-500 transition duration-300">1. Interactive Presentation & Feistel Simulator</h3>
+                <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                    Slide presentasi interaktif lengkap dengan simulator visual putaran Feistel Camellia, diagram blok interaktif, S-Box, dan FL/FL-inv secara detail.
+                </p>
+                <span class="text-xs text-medical-500 font-semibold inline-flex items-center gap-1">
+                    Buka Presentasi <span class="group-hover:translate-x-1 transition duration-200">→</span>
+                </span>
+            </a>
+
+            <!-- Card 2: Simple Cipher Playground -->
+            <a href="camellia_visualizer.html" class="glass-card rounded-2xl p-6 block text-left group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center text-2xl border border-zinc-700 group-hover:bg-zinc-700 transition duration-300">
+                        🧪
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2 group-hover:text-medical-500 transition duration-300">2. Camellia Cipher Playground</h3>
+                <p class="text-xs text-gray-400 leading-relaxed mb-4">
+                    Halaman simulasi cepat untuk menguji enkripsi teks medis ke format Base64 dan sebaliknya secara instan.
+                </p>
+                <span class="text-xs text-medical-500 font-semibold inline-flex items-center gap-1">
+                    Buka Playground <span class="group-hover:translate-x-1 transition duration-200">→</span>
+                </span>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-6xl mx-auto w-full mt-12 pt-6 border-t border-medical-500/10 text-center text-xs text-gray-600">
+        🛡️ SecureMedis - Sistem Pengamanan Rekam Medis &copy; 2026. Buka langsung file ini di Google Chrome / browser pilihan Anda.
+    </footer>
+
+</body>
+</html>

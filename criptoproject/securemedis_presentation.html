@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Presentasi SecureMedis</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            50: '#E6F7F7',
+                            100: '#C2EDEE',
+                            500: '#00A3A3',
+                            600: '#007F7F',
+                            700: '#005C5C',
+                            900: '#003636',
+                        },
+                        darkBg: '#091515',
+                        panelBg: 'rgba(15, 34, 34, 0.7)',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #112d2d, #091515);
+            min-height: 100vh;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: rgba(13, 31, 31, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 163, 163, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px rgba(0, 163, 163, 0.5);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 163, 163, 0.3);
+            border-radius: 3px;
+        }
+
+        /* Feistel Animation styling */
+        .flow-line {
+            stroke-dasharray: 8;
+            animation: dash 1.5s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -16;
+            }
+        }
+
+        .glow-node {
+            filter: drop-shadow(0px 0px 8px rgba(0, 163, 163, 0.8));
+        }
+
+        .path-inactive {
+            stroke: #1f2937 !important;
+            stroke-width: 1.5px !important;
+            stroke-dasharray: none !important;
+            animation: none !important;
+            filter: none !important;
+            transition: all 0.3s ease;
+        }
+
+        .path-active-cyan {
+            stroke: #00f0f0 !important;
+            stroke-width: 3.5px !important;
+            stroke-dasharray: 8 !important;
+            animation: dash 1s linear infinite !important;
+            filter: drop-shadow(0px 0px 6px rgba(0, 240, 240, 0.8)) !important;
+            transition: all 0.3s ease;
+        }
+
+        .path-active-purple {
+            stroke: #a78bfa !important;
+            stroke-width: 3.5px !important;
+            stroke-dasharray: 8 !important;
+            animation: dash 1s linear infinite !important;
+            filter: drop-shadow(0px 0px 6px rgba(167, 139, 250, 0.8)) !important;
+            transition: all 0.3s ease;
+        }
+
+        .node-active-glow {
+            filter: drop-shadow(0px 0px 10px rgba(0, 240, 240, 0.8)) !important;
+            stroke: #00ffff !important;
+            stroke-width: 2.5px !important;
+            fill: #003636 !important;
+            transition: all 0.3s ease;
+        }
+
+        .node-active-purple-glow {
+            filter: drop-shadow(0px 0px 10px rgba(167, 139, 250, 0.8)) !important;
+            stroke: #c084fc !important;
+            stroke-width: 2.5px !important;
+            fill: #3b0764 !important;
+            transition: all 0.3s ease;
+        }
+
+        .node-inactive {
+            filter: none !important;
+            stroke: #00A3A3 !important;
+            stroke-width: 1.5px !important;
+            fill: #0f2929 !important;
+            transition: all 0.3s ease;
+        }
+
+        /* Slide animations */
+        .slide {
+            transition: all 0.5s ease-in-out;
+        }
+        
+        .slide-hidden {
+            display: none;
+            opacity: 0;
+            transform: translateX(50px);
+        }
+
+        .slide-active {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 flex flex-col justify-between h-screen custom-scrollbar">
+
+    <!-- Header bar -->
+    <header class="max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-4 border-b border-medical-500/20 pb-4 mb-4">
+        <div class="flex items-center gap-2">
+            <span class="text-xl">📊</span>
+            <div>
+                <h1 class="text-lg font-bold text-white tracking-tight">Media Presentasi SecureMedis</h1>
+                <p class="text-[10px] text-medical-500 font-semibold tracking-widest uppercase">Edukasi Kriptografi Camellia & Supabase</p>
+            </div>
+        </div>
+        
+        <!-- Navigation Tabs for slides -->
+        <nav class="flex flex-wrap gap-2 text-xs font-semibold">
+            <button onclick="goToSlide(0)" id="nav-0" class="px-3 py-1.5 rounded-lg bg-medical-500 text-white shadow-md">1. Judul</button>
+            <button onclick="goToSlide(1)" id="nav-1" class="px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700">2. Masalah</button>
+            <button onclick="goToSlide(2)" id="nav-2" class="px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700">3. Solusi & Peran</button>
+            <button onclick="goToSlide(3)" id="nav-3" class="px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700">4. Camellia</button>
+            <button onclick="goToSlide(4)" id="nav-4" class="px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700">5. Simulator Feistel</button>
+            <button onclick="goToSlide(5)" id="nav-5" class="px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700">6. DB Cloud View</button>
+        </nav>
+    </header>
+
+    <!-- Slides Container -->
+    <main class="max-w-7xl mx-auto w-full flex-1 flex flex-col justify-center my-4 overflow-y-auto custom-scrollbar">
+
+        <!-- SLIDE 1: JUDUL -->
+        <div id="slide-0" class="slide slide-active text-center max-w-3xl mx-auto flex flex-col gap-6 items-center">
+            <div class="w-20 h-20 rounded-2xl bg-medical-500/15 flex items-center justify-center border border-medical-500/30 text-4xl shadow-lg">
+                🔐
+            </div>
+            <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight glow-text leading-tight">
+                Sistem Pengamanan Rekam Medis Digital Menggunakan Camellia Cipher
+            </h2>
+            <p class="text-sm md:text-base text-gray-400 max-w-xl">
+                Studi Kasus Keamanan Informasi: Enkripsi End-to-End pada Data Pasien dengan Integrasi BCrypt Hash & Supabase Database.
+            </p>
+            <div class="mt-4 flex flex-wrap justify-center gap-4 text-xs font-mono text-medical-100">
+                <span class="px-3 py-1.5 rounded-full bg-medical-900/30 border border-medical-500/20">Camellia-128 CBC</span>
+                <span class="px-3 py-1.5 rounded-full bg-medical-900/30 border border-medical-500/20">BCrypt Password Hash</span>
+                <span class="px-3 py-1.5 rounded-full bg-medical-900/30 border border-medical-500/20">Supabase Cloud</span>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: MASALAH -->
+        <div id="slide-1" class="slide slide-hidden max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="flex flex-col gap-4">
+                    <span class="text-xs font-bold text-red-400 uppercase tracking-widest">⚠️ Latar Belakang & Masalah</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white">Kerentanan Privasi Data Medis Pasien</h2>
+                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
+                        Data rekam medis (Diagnosis, Resep, Catatan Dokter) bersifat sangat sensitif dan dilindungi undang-undang. Namun, pada arsitektur cloud database tradisional:
+                    </p>
+                    <ul class="list-disc list-inside text-xs text-red-200/90 flex flex-col gap-2 bg-red-900/10 p-4 border border-red-500/20 rounded-xl">
+                        <li><strong>Kebocoran Cloud</strong>: Jika server cloud ditembus hacker, semua data rekam medis pasien akan langsung terekspos plaintext.</li>
+                        <li><strong>Adanya Orang Dalam</strong>: Administrator database/server cloud memiliki akses penuh untuk membaca data riwayat medis pasien.</li>
+                        <li><strong>Kredensial Lemah</strong>: Password yang disimpan tanpa hashing yang kuat dapat diretas secara brute-force.</li>
+                    </ul>
+                </div>
+                <!-- Visual representation -->
+                <div class="glass-card rounded-2xl p-6 border-red-500/25 flex flex-col items-center gap-4 text-center">
+                    <span class="text-5xl">🔓</span>
+                    <strong class="text-red-400 text-sm">Database Terbuka Tanpa Enkripsi</strong>
+                    <div class="w-full bg-black/40 p-3 rounded-lg font-mono text-[10px] text-red-200 text-left border border-red-500/10">
+                        SELECT * FROM rekam_medis;<br><br>
+                        [Row 1]<br>
+                        pasien_id: "A123"<br>
+                        diagnosis: <strong class="text-red-400">"Diabetes Tipe 2 dengan Neuropati"</strong><br>
+                        resep: <strong class="text-red-400">"Metformin 500mg 3x1"</strong><br>
+                        <span class="text-gray-500"># Siapapun (termasuk Admin DB) bisa membaca data ini langsung di database!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: SOLUSI & PERAN -->
+        <div id="slide-2" class="slide slide-hidden max-w-5xl mx-auto">
+            <div class="flex flex-col gap-6">
+                <div class="text-center">
+                    <span class="text-xs font-bold text-medical-500 uppercase tracking-widest">🛡️ Solusi Sistem Keamanan</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white mt-1">End-to-End Encryption & Hak Akses Berbasis Role</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Dokter Card -->
+                    <div class="glass-card rounded-xl p-5 border-medical-500/30">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-xl">🩺</span>
+                            <h3 class="font-bold text-white text-sm">DOKTER (Akses Tulis & Baca)</h3>
+                        </div>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">
+                            Dokter menginput rekam medis. Sebelum data dikirim ke internet, perangkat dokter mengenkripsinya dengan **Camellia-128**. Dokter hanya bisa melihat data pasien miliknya sendiri.
+                        </p>
+                    </div>
+
+                    <!-- Pasien Card -->
+                    <div class="glass-card rounded-xl p-5 border-medical-500/30">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-xl">👤</span>
+                            <h3 class="font-bold text-white text-sm">PASIEN (Akses Baca Saja)</h3>
+                        </div>
+                        <p class="text-[11px] text-gray-400 leading-relaxed">
+                            Pasien mengunduh data miliknya dalam keadaan terenkripsi dari Supabase. Aplikasi mendekripsinya secara lokal di memori HP pasien. Pasien tidak bisa memodifikasi data atau melihat rekam medis pasien lain.
+                        </p>
+                    </div>
+
+                    <!-- Admin Card -->
+                    <div class="glass-card rounded-xl p-5 border-zinc-700 bg-zinc-900/20">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-xl">⚙️</span>
+                            <h3 class="font-bold text-zinc-300 text-sm">ADMIN (Akses Manajemen)</h3>
+                        </div>
+                        <p class="text-[11px] text-zinc-400 leading-relaxed">
+                            Admin hanya bertugas mendaftarkan/menghapus user (Dokter/Pasien). Admin **sama sekali tidak memiliki akses read maupun write** ke tabel rekam medis. Data aman dari penyalahgunaan admin.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- BCrypt Explain -->
+                <div class="glass-card rounded-xl p-4 flex flex-col md:flex-row items-center gap-4 border-medical-500/10 mt-2">
+                    <div class="bg-medical-500/10 p-2.5 rounded-lg text-lg text-medical-100">🔑 BCrypt Hashing</div>
+                    <p class="text-xs text-gray-400 flex-1 leading-relaxed">
+                        Kredensial login diamankan dengan **BCrypt** di sisi database. Password tidak pernah disimpan dalam bentuk plaintext. Saat login, aplikasi memverifikasi string password secara aman terhadap hash BCrypt cost=12 yang disimpan di database Supabase.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: SPESIFIKASI CAMELLIA -->
+        <div id="slide-3" class="slide slide-hidden max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="flex flex-col gap-4">
+                    <span class="text-xs font-bold text-medical-500 uppercase tracking-widest">🧮 Spesifikasi Cipher</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white">Mengenal Algoritma Camellia</h2>
+                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
+                        Camellia adalah block cipher simetris 128-bit yang dikembangkan bersama oleh **Mitsubishi Electric** dan **NTT Jepang** pada tahun 2000. Algoritma ini memiliki efisiensi dan tingkat keamanan yang setara dengan AES (Advanced Encryption Standard).
+                    </p>
+                    <div class="grid grid-cols-2 gap-3 mt-2 text-[11px] font-mono text-medical-100">
+                        <div class="p-2 bg-medical-900/25 border border-medical-500/10 rounded-lg">
+                            <span class="block text-gray-500">Ukuran Blok</span>
+                            128-bit (16 Byte)
+                        </div>
+                        <div class="p-2 bg-medical-900/25 border border-medical-500/10 rounded-lg">
+                            <span class="block text-gray-500">Ukuran Kunci</span>
+                            128, 192, atau 256 bit
+                        </div>
+                        <div class="p-2 bg-medical-900/25 border border-medical-500/10 rounded-lg">
+                            <span class="block text-gray-500">Struktur Putaran</span>
+                            18 Rounds Feistel
+                        </div>
+                        <div class="p-2 bg-medical-900/25 border border-medical-500/10 rounded-lg">
+                            <span class="block text-gray-500">Fungsi Linear</span>
+                            FL & FL-inv setiap 6 round
+                        </div>
+                    </div>
+                </div>
+                <!-- Interactive explanation -->
+                <div class="glass-card rounded-2xl p-6 flex flex-col gap-4">
+                    <h3 class="font-bold text-white text-sm border-b border-medical-500/15 pb-1">Struktur Inti Feistel</h3>
+                    <div class="text-xs text-gray-400 flex flex-col gap-2">
+                        <p>
+                            Feistel Network membelah blok data 128-bit menjadi dua bagian 64-bit: <strong>Left (L)</strong> dan <strong>Right (R)</strong>.
+                        </p>
+                        <div class="bg-black/30 p-3 rounded-lg font-mono text-[10px] text-medical-100 border border-medical-500/10 leading-relaxed">
+                            L_baru = R_lama<br>
+                            R_baru = L_lama XOR F(R_lama, Subkey_i)<br><br>
+                            <span class="text-white font-semibold">F-Function terdiri dari:</span><br>
+                            1. XOR data 64-bit dengan subkey.<br>
+                            2. Substitusi byte melalui 4 buah S-Box.<br>
+                            3. Difusi bit melalui P-Function (matriks MDS).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: FEISTEL ROUND SIMULATOR -->
+        <div id="slide-4" class="slide slide-hidden w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                
+                <!-- Left panel: Form simulator -->
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    <div class="glass-card rounded-2xl p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-white text-sm mb-3 flex items-center gap-1.5 border-b border-medical-500/10 pb-1.5">
+                                <span>⚙️</span> Konfigurasi Simulasi
+                            </h3>
+                            <!-- Plaintext input -->
+                            <div class="mb-3">
+                                <label class="block text-[10px] font-semibold text-medical-100 tracking-wider uppercase mb-1">Pesan 16-Karakter (1 Blok)</label>
+                                <input type="text" id="simText" value="SecureMedisData!" maxlength="16"
+                                    class="w-full bg-black/40 border border-medical-500/20 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-medical-500 text-white shadow-inner">
+                            </div>
+                            <!-- Key input -->
+                            <div class="mb-4">
+                                <label class="block text-[10px] font-semibold text-medical-100 tracking-wider uppercase mb-1">Kunci (16-Karakter)</label>
+                                <input type="text" id="simKey" value="SecureMedis2024!" maxlength="16"
+                                    class="w-full bg-black/40 border border-medical-500/20 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-medical-500 text-white shadow-inner">
+                            </div>
+                        </div>
+
+                        <!-- Step controls -->
+                        <div class="border-t border-medical-500/10 pt-3 flex flex-col gap-3">
+                            <button onclick="initSimulate()"
+                                class="w-full bg-medical-600 hover:bg-medical-500 text-white font-bold py-2 px-4 rounded-lg text-xs uppercase tracking-wider transition duration-150">
+                                🔄 Muat Data Simulasi
+                            </button>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="prevStep()" id="btnPrev" disabled
+                                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-40 font-bold py-1.5 px-3 rounded-lg text-xs transition duration-150">
+                                    ← Langkah Sebelumnya
+                                </button>
+                                <button onclick="nextStep()" id="btnNext" disabled
+                                    class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-40 font-bold py-1.5 px-3 rounded-lg text-xs transition duration-150">
+                                    Langkah Selanjutnya →
+                                </button>
+                            </div>
+                            <div class="text-center text-[11px] font-mono text-medical-100" id="roundIndicator">
+                                Status: Klik Muat Data
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Explain Details Round -->
+                    <div class="glass-card rounded-2xl p-4 h-[180px] overflow-y-auto custom-scrollbar font-mono text-[10px] text-gray-400" id="roundDetailsConsole">
+                        [Informasi matematis putaran aktif akan dimuat di sini secara detail]
+                    </div>
+                </div>
+
+                <!-- Right panel: Interactive SVG Diagram -->
+                <div class="lg:col-span-8 glass-card rounded-2xl p-4 flex flex-col justify-between">
+                    <div class="flex justify-between items-center border-b border-medical-500/10 pb-1 mb-2">
+                        <span class="text-xs font-bold text-white">Diagram Putaran Feistel Camellia</span>
+                        <span class="text-[10px] text-medical-500 font-mono" id="blockDebugBytes">BLOK: [00 00...]</span>
+                    </div>
+                    
+                    <!-- Interactive Feistel SVG -->
+                    <div class="flex-1 flex items-center justify-center p-2 bg-black/20 rounded-xl border border-medical-500/5 h-[340px]">
+                        <svg id="feistelSvg" viewBox="0 0 700 320" class="w-full h-full">
+                            <!-- Left Halve Node -->
+                            <rect id="svg-L-box" x="50" y="20" width="160" height="35" rx="6" fill="#0f2929" stroke="#00A3A3" stroke-width="1.5" class="node-inactive"/>
+                            <text x="130" y="42" fill="#fff" font-size="11" font-family="JetBrains Mono" text-anchor="middle" id="svg-L-label">L0 = 0000000000000000</text>
+                            
+                            <!-- Right Halve Node -->
+                            <rect id="svg-R-box" x="490" y="20" width="160" height="35" rx="6" fill="#0f2929" stroke="#00A3A3" stroke-width="1.5" class="node-inactive"/>
+                            <text x="570" y="42" fill="#fff" font-size="11" font-family="JetBrains Mono" text-anchor="middle" id="svg-R-label">R0 = 0000000000000000</text>
+
+                            <!-- Subkey Node -->
+                            <rect id="svg-K-box" x="235" y="85" width="120" height="25" rx="4" fill="#2d1c3a" stroke="#8b5cf6" stroke-width="1" class="node-inactive"/>
+                            <text x="295" y="101" fill="#c084fc" font-size="9" font-family="JetBrains Mono" text-anchor="middle" id="svg-K-label">Key: K1 = 000000...</text>
+
+                            <!-- F-Function Block -->
+                            <rect id="svg-F-box" x="90" y="130" width="80" height="40" rx="6" fill="#0f2d2d" stroke="#00A3A3" stroke-width="2" class="node-inactive"/>
+                            <text x="130" y="154" fill="#00A3A3" font-size="12" font-weight="bold" text-anchor="middle">F-Function</text>
+
+                            <!-- XOR Node -->
+                            <circle id="svg-XOR-node" cx="570" cy="150" r="15" fill="#0f2929" stroke="#00A3A3" stroke-width="2" class="node-inactive"/>
+                            <text x="570" y="154" fill="#00A3A3" font-size="14" font-weight="bold" text-anchor="middle">⊕</text>
+
+                            <!-- Swapping lines -->
+                            <!-- L to next R -->
+                            <path id="line-L-F" d="M 130 55 L 130 130" stroke="#1f2937" stroke-width="1.5" fill="none" class="path-inactive"/>
+                            <path id="line-L-swap" d="M 130 170 L 130 230 L 570 270" stroke="#1f2937" stroke-width="1.5" fill="none" class="path-inactive"/>
+                            <!-- R to next L -->
+                            <path id="line-R-XOR" d="M 570 55 L 570 135" stroke="#1f2937" stroke-width="1.5" fill="none" class="path-inactive"/>
+                            <path id="line-F-XOR" d="M 170 150 L 555 150" stroke="#1f2937" stroke-width="1.5" fill="none" class="path-inactive"/>
+                            <path id="line-R-swap" d="M 570 165 L 570 230 L 130 270" stroke="#1f2937" stroke-width="1.5" fill="none" class="path-inactive"/>
+
+                            <!-- Subkey to F -->
+                            <path id="line-K-F" d="M 295 110 L 295 150 L 170 150" stroke="#1f2937" stroke-width="1.2" fill="none" class="path-inactive"/>
+
+                            <!-- Output Left Node -->
+                            <rect id="svg-L-next-box" x="50" y="275" width="160" height="35" rx="6" fill="#0c1d1d" stroke="#00A3A3" stroke-width="1" class="node-inactive"/>
+                            <text x="130" y="297" fill="#888" font-size="11" font-family="JetBrains Mono" text-anchor="middle" id="svg-L-next-label">L1 = [Menunggu]</text>
+
+                            <!-- Output Right Node -->
+                            <rect id="svg-R-next-box" x="490" y="275" width="160" height="35" rx="6" fill="#0c1d1d" stroke="#00A3A3" stroke-width="1" class="node-inactive"/>
+                            <text x="570" y="297" fill="#888" font-size="11" font-family="JetBrains Mono" text-anchor="middle" id="svg-R-next-label">R1 = [Menunggu]</text>
+                        </svg>
+                    </div>
+
+                    <!-- Diagram Legend -->
+                    <div class="mt-2 flex justify-center gap-6 text-[10px] text-gray-500 font-mono">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 h-1.5 bg-medical-500 inline-block rounded"></span> Alur Data Blok
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 h-1.5 bg-purple-500 inline-block rounded"></span> Subkey Enkripsi
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3.5 h-3.5 border border-medical-500 inline-flex items-center justify-center rounded-full text-[8px] font-bold">⊕</span> Operasi XOR
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SLIDE 6: DATABASE VIEW (SUPABASE) -->
+        <div id="slide-5" class="slide slide-hidden max-w-5xl mx-auto w-full">
+            <div class="flex flex-col gap-6">
+                <div class="text-center">
+                    <span class="text-xs font-bold text-medical-500 uppercase tracking-widest">🗄️ Simulasi Penyimpanan Cloud</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white mt-1">Perbandingan Data di Database vs Aplikasi</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Supabase DB View -->
+                    <div class="glass-card rounded-2xl p-5 border-red-500/20">
+                        <h3 class="font-bold text-red-400 text-sm mb-3 flex items-center gap-2">
+                            <span>☁️</span> Database Cloud Supabase (Terenkripsi)
+                        </h3>
+                        <div class="bg-black/55 p-4 rounded-xl border border-red-500/10 font-mono text-[9px] text-red-200/90 leading-relaxed overflow-x-auto">
+                            <span class="text-gray-500">// SELECT diagnosis_encrypted FROM rekam_medis;</span><br><br>
+                            
+                            <strong>Row 1:</strong><br>
+                            G8h3XPcbh5F6f4uoB1uvlbjq/im/r7Ky0h654r7RnJSsMtgrP5b16QJZd+aGjm5TdfCauUYFg+IkU7nX/ggWbIAswrPtTk9q1MgcBlD8HrM=<br><br>
+                            
+                            <strong>Row 2:</strong><br>
+                            glvWSnr2xCsEjB5+SW+hubCW6YB4O+N+ys+1amuTsFNaHn0Svb/BN+NI+68QvTFG3zh6KaAW2XpvVTtMdqC0eA==<br><br>
+                            
+                            <strong>Row 3:</strong><br>
+                            JE3om3vvjV6v7l1fuSaHtiChQ4JivyUNAJfZYXaAfE6248OWWOt7U8Gnm7d0MhMuFRG2EVYjiVsXd6/A7c2Pvw==
+                        </div>
+                    </div>
+
+                    <!-- Client Application View -->
+                    <div class="glass-card rounded-2xl p-5 border-green-500/20">
+                        <h3 class="font-bold text-green-400 text-sm mb-3 flex items-center gap-2">
+                            <span>📱</span> UI Aplikasi Dokter / Pasien (Didekripsi)
+                        </h3>
+                        <div class="bg-black/55 p-4 rounded-xl border border-green-500/10 font-mono text-[10px] text-green-200/90 leading-relaxed flex flex-col gap-4">
+                            <div>
+                                <strong class="text-white">Rekam Medis 1 (Pasien 1):</strong><br>
+                                🩺 Diagnosis: Diabetes Tipe 2 dengan komplikasi neuropati perifer<br>
+                                💊 Resep: Metformin 500mg 3x1, Glibenklamid 5mg 1x1 pagi
+                            </div>
+                            
+                            <div>
+                                <strong class="text-white">Rekam Medis 2 (Pasien 1):</strong><br>
+                                🩺 Diagnosis: Hipertensi Grade 2, TD 160/100 mmHg<br>
+                                💊 Resep: Amlodipine 10mg 1x1, Candesartan 16mg 1x1
+                            </div>
+
+                            <div>
+                                <strong class="text-white">Rekam Medis 3 (Pasien 2):</strong><br>
+                                🩺 Diagnosis: Infeksi Saluran Pernafasan Atas (ISPA) ringan<br>
+                                💊 Resep: Amoxicillin 500mg 3x1, Paracetamol 500mg 3x1 jika demam
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-center text-xs text-gray-500">
+                    *Kunci enkripsi yang digunakan sistem untuk melakukan enkripsi/dekripsi secara otomatis adalah <code class="text-medical-500">"SecureMedis2024!"</code>
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer navigation buttons -->
+    <footer class="max-w-7xl mx-auto w-full flex justify-between items-center border-t border-medical-500/20 pt-4 mt-4 text-xs text-gray-500">
+        <div>
+            Slide <span id="currentSlideLabel">1</span> dari 6
+        </div>
+        <div class="flex gap-4">
+            <button onclick="prevSlide()" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-lg transition">Sebelumnya</button>
+            <button onclick="nextSlide()" class="px-4 py-2 bg-medical-600 hover:bg-medical-500 text-white font-bold rounded-lg transition shadow-md">Selanjutnya</button>
+        </div>
+    </footer>
+
+    <!-- Camellia visualizer script logic -->
+    <script>
+        // SBOX constants
+        const SBOX1 = [
+            112, 130,  44, 236, 179,  39, 192, 229, 228, 133,  87,  53, 234,  12, 174,  65,
+             35, 239, 107, 147,  69,  25, 165,  33, 237,  14,  79,  78,  29, 101, 146, 189,
+            134, 184, 175, 143, 124, 235,  31, 206,  62,  48, 220,  95,  94, 197,  11,  26,
+            166, 225,  57, 202, 213,  71,  93,  61, 217,   1,  90, 214,  81,  86, 108,  77,
+            139,  13, 154, 102, 251, 204, 176,  45, 116,  18,  43,  32, 240, 177, 132, 153,
+            223,  76, 203, 194,  52, 126, 118,   5, 109, 183, 169,  49, 209,  23,   4, 215,
+             20,  88,  58,  97, 222,  27,  17,  28,  50,  15, 156,  22,  83,  24, 242,  34,
+            254,  68, 207, 178, 195, 181, 122, 145,  36,   8, 232, 168,  96, 252, 105,  80,
+            170, 208, 160, 125, 161, 137,  98, 151,  84,  91,  30, 149, 224, 255, 100, 210,
+             16, 196,   0,  72, 163, 247, 117, 219, 138,   3, 230, 218,   9,  63, 221, 148,
+            135,  92, 131,   2, 205,  74, 144,  51, 115, 103, 246, 243, 157, 127, 191, 226,
+             82, 155, 216,  38, 200,  55, 198,  59, 129, 150, 111,  75,  19, 190,  99,  46,
+            233, 121, 167, 140, 159, 110, 188, 142,  41, 245, 249, 182,  47, 253, 180,  89,
+            120, 152,   6, 106, 231,  70, 113, 186, 212,  37, 171,  66, 136, 162, 141, 250,
+            114,   7, 185,  85, 248, 238, 172,  10,  54,  73,  42, 104,  60,  56, 241, 164,
+             64,  40, 211, 123, 187, 201,  67, 193,  21, 227, 173, 244, 119, 199, 128, 158
+        ];
+
+        const SBOX2 = new Uint8Array(256);
+        const SBOX3 = new Uint8Array(256);
+        const SBOX4 = new Uint8Array(256);
+        for (let i = 0; i < 256; i++) {
+            const v = SBOX1[i];
+            SBOX2[i] = ((v << 1) | (v >> 7)) & 0xFF;
+            SBOX3[i] = ((v >> 1) | (v << 7)) & 0xFF;
+            SBOX4[i] = SBOX1[((i << 1) | (i >> 7)) & 0xFF];
+        }
+
+        const SIGMA = [
+            [0xA09E667Fn, 0x3BCC908Bn],
+            [0xB67AE879n, 0x4F3108A4n],
+            [0xB2FB1366n, 0xEA397F2Fn],
+            [0xC4BEA1DBn, 0xA8599294n],
+            [0xA08FAE9Bn, 0xBC394BD8n],
+            [0xBEF85F0En, 0xCA7CBC72n]
+        ];
+
+        // Slide State
+        let currentSlide = 0;
+        const totalSlides = 6;
+
+        function updateSlideUI() {
+            for (let i = 0; i < totalSlides; i++) {
+                const slide = document.getElementById(`slide-${i}`);
+                const navBtn = document.getElementById(`nav-${i}`);
+                if (i === currentSlide) {
+                    slide.className = "slide slide-active";
+                    navBtn.className = "px-3 py-1.5 rounded-lg bg-medical-500 text-white shadow-md";
+                } else {
+                    slide.className = "slide slide-hidden";
+                    navBtn.className = "px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-zinc-700";
+                }
+            }
+            document.getElementById("currentSlideLabel").textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlideUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlideUI();
+            }
+        }
+
+        function goToSlide(n) {
+            currentSlide = n;
+            updateSlideUI();
+        }
+
+        // P-Function & F-Function
+        function pFunction(x) {
+            const s = new Uint8Array(8);
+            s[0] = SBOX1[Number((x >> 56n) & 0xFFn)];
+            s[1] = SBOX2[Number((x >> 48n) & 0xFFn)];
+            s[2] = SBOX3[Number((x >> 40n) & 0xFFn)];
+            s[3] = SBOX4[Number((x >> 32n) & 0xFFn)];
+            s[4] = SBOX2[Number((x >> 24n) & 0xFFn)];
+            s[5] = SBOX3[Number((x >> 16n) & 0xFFn)];
+            s[6] = SBOX4[Number((x >> 8n) & 0xFFn)];
+            s[7] = SBOX1[Number(x & 0xFFn)];
+
+            const t = new Uint8Array(8);
+            t[0] = s[0] ^ s[2] ^ s[3] ^ s[5] ^ s[6] ^ s[7];
+            t[1] = s[0] ^ s[1] ^ s[3] ^ s[4] ^ s[6] ^ s[7];
+            t[2] = s[0] ^ s[1] ^ s[2] ^ s[4] ^ s[5] ^ s[7];
+            t[3] = s[1] ^ s[2] ^ s[3] ^ s[4] ^ s[5] ^ s[6];
+            t[4] = s[0] ^ s[1] ^ s[5] ^ s[6] ^ s[7];
+            t[5] = s[1] ^ s[2] ^ s[4] ^ s[6] ^ s[7];
+            t[6] = s[2] ^ s[3] ^ s[4] ^ s[5] ^ s[7];
+            t[7] = s[0] ^ s[3] ^ s[4] ^ s[5] ^ s[6];
+
+            let result = 0n;
+            for (let i = 0; i < 8; i++) {
+                result = (result << 8n) | BigInt(t[i]);
+            }
+            return result;
+        }
+
+        function fFunction(f, ke) {
+            return pFunction(f ^ ke);
+        }
+
+        function rotateLeft32(val, amount) {
+            return ((val << amount) | (val >>> (32 - amount))) & 0xFFFFFFFF;
+        }
+
+        function flFunction(flIn, ke) {
+            let x1 = Number((flIn >> 32n) & 0xFFFFFFFFn);
+            let x2 = Number(flIn & 0xFFFFFFFFn);
+            const keL = Number((ke >> 32n) & 0xFFFFFFFFn);
+            const keR = Number(ke & 0xFFFFFFFFn);
+            
+            x2 = (x2 ^ rotateLeft32(x1 & keL, 1)) >>> 0;
+            x1 = (x1 ^ (x2 | keR)) >>> 0;
+            
+            return (BigInt(x1) << 32n) | BigInt(x2);
+        }
+
+        function flInvFunction(flIn, ke) {
+            let x1 = Number((flIn >> 32n) & 0xFFFFFFFFn);
+            let x2 = Number(flIn & 0xFFFFFFFFn);
+            const keL = Number((ke >> 32n) & 0xFFFFFFFFn);
+            const keR = Number(ke & 0xFFFFFFFFn);
+
+            x1 = (x1 ^ (x2 | keR)) >>> 0;
+            x2 = (x2 ^ rotateLeft32(x1 & keL, 1)) >>> 0;
+
+            return (BigInt(x1) << 32n) | BigInt(x2);
+        }
+
+        function rotL128(kl, kr, n) {
+            let combined = (kl << 64n) | kr;
+            let rotated = ((combined << BigInt(n)) | (combined >> BigInt(128 - n))) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFn;
+            return [
+                rotated >> 64n,
+                rotated & 0xFFFFFFFFFFFFFFFFn
+            ];
+        }
+
+        function keySchedule(keyBytes) {
+            function bytesToLong(b, off) {
+                let v = 0n;
+                for (let i = 0; i < 8; i++) v = (v << 8n) | BigInt(b[off + i]);
+                return v;
+            }
+
+            const kl = bytesToLong(keyBytes, 0);
+            const kr = bytesToLong(keyBytes, 8);
+
+            let d1 = kl ^ kr;
+            let d2 = 0n;
+
+            d2 = d2 ^ fFunction(d1, SIGMA[0][0]);
+            d1 = d1 ^ fFunction(d2, SIGMA[1][0]);
+            d1 = d1 ^ kl;
+            d2 = d2 ^ kr;
+            d2 = d2 ^ fFunction(d1, SIGMA[2][0]);
+            d1 = d1 ^ fFunction(d2, SIGMA[3][0]);
+
+            const kaL = d1;
+            const kaR = d2;
+
+            const k = new Array(18);
+            const ke = new Array(4);
+            const kw = new Array(4);
+
+            kw[0] = kl; kw[1] = kr;
+            k[0] = kaL; k[1] = kaR;
+
+            let rot = rotL128(kl, kr, 15);
+            k[2] = rot[0]; k[3] = rot[1];
+
+            rot = rotL128(kaL, kaR, 15);
+            k[4] = rot[0]; k[5] = rot[1];
+
+            rot = rotL128(kaL, kaR, 30);
+            ke[0] = rot[0]; ke[1] = rot[1];
+
+            rot = rotL128(kl, kr, 45);
+            k[6] = rot[0]; k[7] = rot[1];
+
+            rot = rotL128(kaL, kaR, 45);
+            k[8] = rot[0];
+
+            rot = rotL128(kl, kr, 77);
+            k[9] = rot[1];
+
+            rot = rotL128(kl, kr, 94);
+            k[10] = rot[0]; k[11] = rot[1];
+
+            rot = rotL128(kaL, kaR, 94);
+            ke[2] = rot[0]; ke[3] = rot[1];
+
+            rot = rotL128(kl, kr, 111);
+            k[12] = rot[0]; k[13] = rot[1];
+
+            rot = rotL128(kaL, kaR, 111);
+            k[14] = rot[0]; k[15] = rot[1];
+
+            rot = rotL128(kl, kr, 127);
+            k[16] = rot[0]; k[17] = rot[1];
+
+            rot = rotL128(kaL, kaR, 94);
+            kw[2] = rot[0]; kw[3] = rot[1];
+
+            return { k, ke, kw };
+        }
+
+        // Feistel Simulator State
+        let simSteps = [];
+        let simStepIndex = 0;
+        let simSubStep = 0;
+        let isInitialized = false;
+
+        function getBytesFromString(str, size = 16) {
+            const bytes = new TextEncoder().encode(str);
+            const res = new Uint8Array(size);
+            res.set(bytes.slice(0, size));
+            return res;
+        }
+
+        function bigIntToHex64(v) {
+            return v.toString(16).toUpperCase().padStart(16, '0');
+        }
+
+        function getMaxSubSteps(type) {
+            if (type === "feistel") return 4;
+            if (type === "initial") return 1;
+            return 2;
+        }
+
+        function initSimulate() {
+            const text = document.getElementById("simText").value;
+            const key = document.getElementById("simKey").value;
+
+            const textBytes = getBytesFromString(text, 16);
+            const keyBytes = getBytesFromString(key, 16);
+
+            // Print raw block details
+            document.getElementById("blockDebugBytes").textContent = `BLOCK HEX: ${Array.from(textBytes).map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ')}`;
+
+            // Generate key schedule
+            const ks = keySchedule(keyBytes);
+
+            // Run Feistel encryption steps
+            function bytesToLong(b, off) {
+                let v = 0n;
+                for (let i = 0; i < 8; i++) v = (v << 8n) | BigInt(b[off + i]);
+                return v;
+            }
+
+            let d1 = bytesToLong(textBytes, 0);
+            let d2 = bytesToLong(textBytes, 8);
+
+            simSteps = [];
+
+            // 0. Initial
+            simSteps.push({
+                name: "Blok Awal",
+                type: "initial",
+                L: d1,
+                R: d2,
+                desc: "Data dibagi menjadi Left Halve (L) dan Right Halve (R) masing-masing 64-bit."
+            });
+
+            // Pre-whitening
+            let nextD1 = d1 ^ ks.kw[0];
+            let nextD2 = d2 ^ ks.kw[1];
+            simSteps.push({
+                name: "Pre-Whitening",
+                type: "whitening",
+                L: nextD1,
+                R: nextD2,
+                subkey1: ks.kw[0],
+                subkey2: ks.kw[1],
+                desc: "Pre-whitening meng-XOR L & R awal dengan kunci pemutihan KW1 & KW2 agar proses Feistel tidak dimulai dari plaintext mentah."
+            });
+            d1 = nextD1;
+            d2 = nextD2;
+
+            // Rounds 1-18
+            for (let round = 1; round <= 18; round++) {
+                const subkey = ks.k[round - 1];
+                let fVal = 0n;
+                let prevD1 = d1;
+                let prevD2 = d2;
+
+                if (round % 2 !== 0) {
+                    fVal = fFunction(d1, subkey);
+                    d2 = d2 ^ fVal;
+                } else {
+                    fVal = fFunction(d2, subkey);
+                    d1 = d1 ^ fVal;
+                }
+
+                // Add step description
+                let xorMath = round % 2 !== 0 ? 
+                    `R_out = R_in (${bigIntToHex64(prevD2)}) ⊕ F-Function (${bigIntToHex64(fVal)})` :
+                    `L_out = L_in (${bigIntToHex64(prevD1)}) ⊕ F-Function (${bigIntToHex64(fVal)})`;
+
+                simSteps.push({
+                    name: `Ronde ${round}`,
+                    type: "feistel",
+                    round: round,
+                    L: d1,
+                    R: d2,
+                    subkey: subkey,
+                    fVal: fVal,
+                    math: xorMath,
+                    desc: `Round ${round}: F-Function memproses setengah blok dengan subkey K${round}. Hasilnya di-XOR dengan setengah blok lainnya.`
+                });
+
+                // FL Layers
+                if (round === 6) {
+                    let flD1 = flFunction(d1, ks.ke[0]);
+                    let flD2 = flInvFunction(d2, ks.ke[1]);
+                    simSteps.push({
+                        name: "FL / FL-Inv Layer 1",
+                        type: "fl",
+                        L: flD1,
+                        R: flD2,
+                        subkey1: ks.ke[0],
+                        subkey2: ks.ke[1],
+                        desc: "FL & FL-Inv Layer: Melakukan transformasi linear 32-bit rotasi dan bitwise operations guna merusak pola struktur matematika linear."
+                    });
+                    d1 = flD1;
+                    d2 = flD2;
+                } else if (round === 12) {
+                    let flD1 = flFunction(d1, ks.ke[2]);
+                    let flD2 = flInvFunction(d2, ks.ke[3]);
+                    simSteps.push({
+                        name: "FL / FL-Inv Layer 2",
+                        type: "fl",
+                        L: flD1,
+                        R: flD2,
+                        subkey1: ks.ke[2],
+                        subkey2: ks.ke[3],
+                        desc: "FL & FL-Inv Layer ke-2 dimasukkan setelah Round 12 untuk mencegah cryptanalysis tingkat lanjut."
+                    });
+                    d1 = flD1;
+                    d2 = flD2;
+                }
+            }
+
+            // Post-whitening
+            let postD1 = d1 ^ ks.kw[3];
+            let postD2 = d2 ^ ks.kw[2];
+            simSteps.push({
+                name: "Post-Whitening",
+                type: "whitening",
+                L: postD1,
+                R: postD2,
+                subkey1: ks.kw[3],
+                subkey2: ks.kw[2],
+                desc: "Post-whitening meng-XOR L & R akhir dengan kunci KW3 & KW4 sebelum menyatukannya kembali."
+            });
+
+            // Final Swap Swap
+            simSteps.push({
+                name: "Ciphertext (Final Swap)",
+                type: "final",
+                L: postD2, // Swap L and R output
+                R: postD1,
+                desc: "Langkah akhir: Bagian Kiri dan Kanan ditukar (Swap) lalu digabungkan menjadi blok Ciphertext 128-bit."
+            });
+
+            simStepIndex = 0;
+            simSubStep = 0;
+            isInitialized = true;
+            document.getElementById("btnPrev").disabled = false;
+            document.getElementById("btnNext").disabled = false;
+            renderStep();
+        }
+
+        function renderStep() {
+            if (!isInitialized) return;
+
+            const step = simSteps[simStepIndex];
+            const prevStep = simStepIndex > 0 ? simSteps[simStepIndex - 1] : null;
+
+            // Define sub-step names for indicator
+            let subStepName = "";
+            if (step.type === "feistel") {
+                if (simSubStep === 0) subStepName = "Input";
+                else if (simSubStep === 1) subStepName = "F-Function";
+                else if (simSubStep === 2) subStepName = "XOR";
+                else subStepName = "Swap / Selesai";
+            } else {
+                if (simSubStep === 0) subStepName = "Input";
+                else subStepName = "Hasil";
+            }
+
+            document.getElementById("roundIndicator").textContent = `Langkah: ${step.name} (${subStepName}) — ${simStepIndex + 1}/${simSteps.length}`;
+
+            // Reset SVG nodes/paths
+            const paths = ["line-L-F", "line-K-F", "line-R-XOR", "line-F-XOR", "line-L-swap", "line-R-swap"];
+            const nodes = ["svg-L-box", "svg-R-box", "svg-K-box", "svg-F-box", "svg-XOR-node", "svg-L-next-box", "svg-R-next-box"];
+            
+            paths.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.className.baseVal = "path-inactive";
+            });
+            nodes.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.className.baseVal = "node-inactive";
+            });
+
+            // Update SVG L & R labels (top boxes)
+            const currentL = (simStepIndex === 0) ? step.L : prevStep.L;
+            const currentR = (simStepIndex === 0) ? step.R : prevStep.R;
+            document.getElementById("svg-L-label").textContent = `L = ${bigIntToHex64(currentL)}`;
+            document.getElementById("svg-R-label").textContent = `R = ${bigIntToHex64(currentR)}`;
+
+            // Subkey label
+            const subkeyLabel = document.getElementById("svg-K-label");
+            if (step.type === "feistel") {
+                subkeyLabel.textContent = `K${step.round} = ${bigIntToHex64(step.subkey).substring(0, 8)}...`;
+            } else if (step.type === "whitening" || step.type === "fl") {
+                subkeyLabel.textContent = `Key = ${bigIntToHex64(step.subkey1).substring(0, 8)}...`;
+            } else {
+                subkeyLabel.textContent = "Whitening: None";
+            }
+
+            // Next/Bottom label preview logic
+            const nextL = document.getElementById("svg-L-next-label");
+            const nextR = document.getElementById("svg-R-next-label");
+            const maxSubSteps = getMaxSubSteps(step.type);
+
+            if (simSubStep === maxSubSteps - 1) {
+                // We are at the final sub-step, show output
+                if (simStepIndex === simSteps.length - 1) {
+                    nextL.textContent = `C_L = ${bigIntToHex64(step.L).substring(0, 8)}...`;
+                    nextR.textContent = `C_R = ${bigIntToHex64(step.R).substring(0, 8)}...`;
+                } else {
+                    nextL.textContent = `Next L = ${bigIntToHex64(step.L).substring(0, 8)}...`;
+                    nextR.textContent = `Next R = ${bigIntToHex64(step.R).substring(0, 8)}...`;
+                }
+            } else {
+                nextL.textContent = "[Menunggu]";
+                nextR.textContent = "[Menunggu]";
+            }
+
+            // Technical details panel console text
+            let consoleText = "";
+
+            // Apply styles and console text based on step type & sub-step
+            if (step.type === "initial") {
+                // Highlight input nodes
+                document.getElementById("svg-L-box").className.baseVal = "node-active-glow";
+                document.getElementById("svg-R-box").className.baseVal = "node-active-glow";
+
+                consoleText = `=== DETAIL TEKNIS: DATA AWAL ===\n`;
+                consoleText += `Left Halve (L0)  : 0x${bigIntToHex64(step.L)}\n`;
+                consoleText += `Right Halve (R0) : 0x${bigIntToHex64(step.R)}\n\n`;
+                consoleText += `[Deskripsi Kerja]:\n${step.desc}`;
+            } 
+            else if (step.type === "whitening") {
+                if (simSubStep === 0) {
+                    document.getElementById("svg-L-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-box").className.baseVal = "node-active-glow";
+
+                    consoleText = `=== DETAIL TEKNIS: INPUT ${step.name.toUpperCase()} ===\n`;
+                    consoleText += `Left Halve (L_in)  : 0x${bigIntToHex64(prevStep.L)}\n`;
+                    consoleText += `Right Halve (R_in) : 0x${bigIntToHex64(prevStep.R)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\nMenunggu eksekusi ${step.name.toLowerCase()}. Kita akan meng-XOR bagian kiri dan kanan dengan subkey masing-masing.`;
+                } else {
+                    document.getElementById("svg-L-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-L-next-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-next-box").className.baseVal = "node-active-glow";
+
+                    consoleText = `=== DETAIL TEKNIS: HASIL ${step.name.toUpperCase()} ===\n`;
+                    consoleText += `Left Halve (L_in)   : 0x${bigIntToHex64(prevStep.L)}\n`;
+                    consoleText += `Right Halve (R_in)  : 0x${bigIntToHex64(prevStep.R)}\n`;
+                    consoleText += `Subkey 1            : 0x${bigIntToHex64(step.subkey1)}\n`;
+                    consoleText += `Subkey 2            : 0x${bigIntToHex64(step.subkey2)}\n`;
+                    consoleText += `Hasil Left (L_out)  : 0x${bigIntToHex64(step.L)}\n`;
+                    consoleText += `Hasil Right (R_out) : 0x${bigIntToHex64(step.R)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\n${step.desc}`;
+                }
+            } 
+            else if (step.type === "fl") {
+                if (simSubStep === 0) {
+                    document.getElementById("svg-L-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-box").className.baseVal = "node-active-glow";
+
+                    consoleText = `=== DETAIL TEKNIS: INPUT ${step.name.toUpperCase()} ===\n`;
+                    consoleText += `Left Halve (L_in)  : 0x${bigIntToHex64(prevStep.L)}\n`;
+                    consoleText += `Right Halve (R_in) : 0x${bigIntToHex64(prevStep.R)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\nMenunggu pemrosesan lapisan fungsi FL (untuk Left) dan FL-Inv (untuk Right) menggunakan subkey kemudi.`;
+                } else {
+                    document.getElementById("svg-L-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-L-next-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-next-box").className.baseVal = "node-active-glow";
+
+                    consoleText = `=== DETAIL TEKNIS: HASIL ${step.name.toUpperCase()} ===\n`;
+                    consoleText += `Left Halve (L_in)   : 0x${bigIntToHex64(prevStep.L)}\n`;
+                    consoleText += `Right Halve (R_in)  : 0x${bigIntToHex64(prevStep.R)}\n`;
+                    consoleText += `Subkey FL (KE_L)    : 0x${bigIntToHex64(step.subkey1)}\n`;
+                    consoleText += `Subkey FL-Inv (KE_R): 0x${bigIntToHex64(step.subkey2)}\n`;
+                    consoleText += `Hasil Left (L_out)  : 0x${bigIntToHex64(step.L)}\n`;
+                    consoleText += `Hasil Right (R_out) : 0x${bigIntToHex64(step.R)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\n${step.desc}`;
+                }
+            } 
+            else if (step.type === "final") {
+                if (simSubStep === 0) {
+                    document.getElementById("svg-L-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-box").className.baseVal = "node-active-glow";
+
+                    consoleText = `=== DETAIL TEKNIS: INPUT FINAL SWAP ===\n`;
+                    consoleText += `Left Halve (L_in)  : 0x${bigIntToHex64(prevStep.L)}\n`;
+                    consoleText += `Right Halve (R_in) : 0x${bigIntToHex64(prevStep.R)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\nMenunggu penukaran (swap) akhir untuk menyusun blok Ciphertext final.`;
+                } else {
+                    document.getElementById("svg-L-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-L-next-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-next-box").className.baseVal = "node-active-glow";
+
+                    consoleText = `=== DETAIL TEKNIS: HASIL CIPHERTEXT ===\n`;
+                    consoleText += `Left In  (L_in)      : 0x${bigIntToHex64(prevStep.L)}\n`;
+                    consoleText += `Right In (R_in)      : 0x${bigIntToHex64(prevStep.R)}\n`;
+                    consoleText += `Hasil Left (L_out)   : 0x${bigIntToHex64(step.L)} (Hasil R_in)\n`;
+                    consoleText += `Hasil Right (R_out)  : 0x${bigIntToHex64(step.R)} (Hasil L_in)\n`;
+                    consoleText += `Ciphertext 128-bit   : 0x${bigIntToHex64(step.L)}${bigIntToHex64(step.R)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\n${step.desc}`;
+                }
+            } 
+            else if (step.type === "feistel") {
+                if (simSubStep === 0) {
+                    document.getElementById("svg-L-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-box").className.baseVal = "node-active-glow";
+
+                    consoleText = `=== DETAIL TEKNIS: INPUT ${step.name.toUpperCase()} ===\n`;
+                    consoleText += `Left Halve (L_in)  : 0x${bigIntToHex64(prevStep.L)}\n`;
+                    consoleText += `Right Halve (R_in) : 0x${bigIntToHex64(prevStep.R)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\nMemulai Ronde ${step.round}. Setengah bagian kiri dan kanan siap diproses.`;
+                } 
+                else if (simSubStep === 1) {
+                    const activeHalf = step.round % 2 !== 0 ? "Kiri (L_in)" : "Kanan (R_in)";
+                    const activeVal = step.round % 2 !== 0 ? prevStep.L : prevStep.R;
+
+                    document.getElementById(step.round % 2 !== 0 ? "svg-L-box" : "svg-R-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-K-box").className.baseVal = "node-active-purple-glow";
+                    document.getElementById("svg-F-box").className.baseVal = "node-active-glow";
+                    
+                    document.getElementById("line-L-F").className.baseVal = "path-active-cyan";
+                    document.getElementById("line-K-F").className.baseVal = "path-active-purple";
+
+                    consoleText = `=== DETAIL TEKNIS: ${step.name.toUpperCase()} - INPUT F-FUNCTION ===\n`;
+                    consoleText += `Bagian Aktif        : ${activeHalf} (0x${bigIntToHex64(activeVal)})\n`;
+                    consoleText += `Subkey K${step.round}           : 0x${bigIntToHex64(step.subkey)}\n`;
+                    consoleText += `XOR dengan Subkey   : 0x${bigIntToHex64(activeVal ^ step.subkey)}\n`;
+                    consoleText += `Output F-Function   : 0x${bigIntToHex64(step.fVal)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\nData setengah blok ${activeHalf} di-XOR dengan subkey K${step.round}, lalu dimasukkan ke dalam F-Function (substitusi S-Box dan difusi linear P-Function).`;
+                } 
+                else if (simSubStep === 2) {
+                    const targetHalf = step.round % 2 !== 0 ? "Kanan (R_in)" : "Kiri (L_in)";
+                    const targetVal = step.round % 2 !== 0 ? prevStep.R : prevStep.L;
+
+                    document.getElementById(step.round % 2 !== 0 ? "svg-R-box" : "svg-L-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-F-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-XOR-node").className.baseVal = "node-active-glow";
+
+                    document.getElementById("line-R-XOR").className.baseVal = "path-active-cyan";
+                    document.getElementById("line-F-XOR").className.baseVal = "path-active-purple";
+
+                    consoleText = `=== DETAIL TEKNIS: ${step.name.toUpperCase()} - OPERASI XOR ===\n`;
+                    consoleText += `Bagian Target (XOR) : ${targetHalf} (0x${bigIntToHex64(targetVal)})\n`;
+                    consoleText += `Output F-Function   : 0x${bigIntToHex64(step.fVal)}\n`;
+                    consoleText += `Operasi XOR         : ${step.math}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\nOutput dari F-Function di-XOR dengan bagian ${targetHalf} untuk mengubah nilainya sebelum dilakukan Swap.`;
+                } 
+                else if (simSubStep === 3) {
+                    document.getElementById("svg-L-next-box").className.baseVal = "node-active-glow";
+                    document.getElementById("svg-R-next-box").className.baseVal = "node-active-glow";
+
+                    document.getElementById("line-L-swap").className.baseVal = "path-active-cyan";
+                    document.getElementById("line-R-swap").className.baseVal = "path-active-cyan";
+
+                    consoleText = `=== DETAIL TEKNIS: ${step.name.toUpperCase()} - SELESAI & SWAP ===\n`;
+                    consoleText += `Input Ronde L       : 0x${bigIntToHex64(prevStep.L)}\n`;
+                    consoleText += `Input Ronde R       : 0x${bigIntToHex64(prevStep.R)}\n`;
+                    consoleText += `Hasil Akhir L       : 0x${bigIntToHex64(step.L)}\n`;
+                    consoleText += `Hasil Akhir R       : 0x${bigIntToHex64(step.R)}\n\n`;
+                    consoleText += `[Deskripsi Kerja]:\n${step.desc}`;
+                }
+            }
+
+            document.getElementById("roundDetailsConsole").textContent = consoleText;
+
+            // Highlight F-Box and XOR-node fills programmatically
+            const fBox = document.getElementById("svg-F-box");
+            const xorNode = document.getElementById("svg-XOR-node");
+            if (step.type === "feistel" && simSubStep > 0 && simSubStep < 3) {
+                fBox.setAttribute("fill", "#005C5C");
+                fBox.setAttribute("stroke", "#00ffff");
+                if (simSubStep === 2) {
+                    xorNode.setAttribute("fill", "#581c87");
+                } else {
+                    xorNode.setAttribute("fill", "#0f2929");
+                }
+            } else {
+                fBox.setAttribute("fill", "#0f2d2d");
+                fBox.setAttribute("stroke", "#00A3A3");
+                xorNode.setAttribute("fill", "#0f2929");
+            }
+
+            // Control button states
+            document.getElementById("btnPrev").disabled = (simStepIndex === 0 && simSubStep === 0);
+            document.getElementById("btnNext").disabled = (simStepIndex === simSteps.length - 1 && simSubStep === getMaxSubSteps(step.type) - 1);
+        }
+
+        function nextStep() {
+            if (!isInitialized) return;
+            const step = simSteps[simStepIndex];
+            const maxSubSteps = getMaxSubSteps(step.type);
+            
+            if (simSubStep < maxSubSteps - 1) {
+                simSubStep++;
+                renderStep();
+            } else if (simStepIndex < simSteps.length - 1) {
+                simStepIndex++;
+                simSubStep = 0;
+                renderStep();
+            }
+        }
+
+        function prevStep() {
+            if (!isInitialized) return;
+            
+            if (simSubStep > 0) {
+                simSubStep--;
+                renderStep();
+            } else if (simStepIndex > 0) {
+                simStepIndex--;
+                const prevStepData = simSteps[simStepIndex];
+                simSubStep = getMaxSubSteps(prevStepData.type) - 1;
+                renderStep();
+            }
+        }
+
+        // Initialize slideshow on load
+        window.onload = function() {
+            updateSlideUI();
+        }
+    </script>
+</body>
+</html>

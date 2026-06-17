@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary - Medical teal/blue -->
+    <color name="primary">#006A6A</color>
+    <color name="primary_dark">#004D4D</color>
+    <color name="primary_light">#E0F4F4</color>
+    <color name="primary_variant">#008080</color>
+
+    <!-- Backgrounds -->
+    <color name="background">#F0F7F7</color>
+    <color name="surface">#FFFFFF</color>
+
+    <!-- Text -->
+    <color name="text_primary">#1A2B2B</color>
+    <color name="text_secondary">#6B8585</color>
+
+    <!-- Utility -->
+    <color name="white">#FFFFFF</color>
+    <color name="white_70">#B3FFFFFF</color>
+    <color name="divider">#E8F0F0</color>
+    <color name="error">#D32F2F</color>
+    <color name="success">#2E7D32</color>
+
+    <!-- Role colors -->
+    <color name="role_dokter">#1565C0</color>
+    <color name="role_dokter_bg">#E3F2FD</color>
+    <color name="role_pasien">#2E7D32</color>
+    <color name="role_pasien_bg">#E8F5E9</color>
+    <color name="role_admin">#6A1B9A</color>
+    <color name="role_admin_bg">#F3E5F5</color>
+</resources>

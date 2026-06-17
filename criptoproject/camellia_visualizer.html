@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camellia Cipher Visualizer - SecureMedis</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (for structure, with custom overrides) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            50: '#E6F7F7',
+                            100: '#C2EDEE',
+                            500: '#00A3A3',
+                            600: '#007F7F',
+                            700: '#005C5C',
+                            900: '#003636',
+                        },
+                        darkBg: '#091515',
+                        panelBg: 'rgba(15, 34, 34, 0.7)',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #112d2d, #091515);
+            min-height: 100vh;
+            color: #E2E8F0;
+        }
+
+        .glass-card {
+            background: rgba(13, 31, 31, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 163, 163, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px rgba(0, 163, 163, 0.5);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 163, 163, 0.3);
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 163, 163, 0.5);
+        }
+
+        /* Heartbeat Animation for medical feel */
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.15); }
+            28% { transform: scale(1.05); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+        .animate-heartbeat {
+            animation: heartbeat 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 custom-scrollbar">
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row items-center justify-between gap-4 border-b border-medical-500/20 pb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-medical-500/20 flex items-center justify-center border border-medical-500/40 animate-heartbeat">
+                <span class="text-2xl text-medical-500">❤️</span>
+            </div>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight glow-text">SecureMedis</h1>
+                <p class="text-xs md:text-sm text-medical-500 font-medium tracking-wide">CAMELLIA CIPHER INTERACTIVE SIMULATOR</p>
+            </div>
+        </div>
+        <div class="px-4 py-2 rounded-full bg-medical-500/10 border border-medical-500/30 text-xs md:text-sm text-medical-100 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
+            Algoritma: Camellia-128 (18 Rounds Feistel Network)
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Inputs & Explainer -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- Interactive Playground Card -->
+            <div class="glass-card rounded-2xl p-6">
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-medical-500/10 pb-2">
+                    <span>🔬</span> Cryptography Playground
+                </h2>
+                
+                <!-- Input Key -->
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold text-medical-100 mb-1 tracking-wider uppercase">Enkripsi Key (16 Karakter / 128-bit)</label>
+                    <input type="text" id="inputKey" value="SecureMedis2024!" maxlength="16"
+                        class="w-full bg-black/40 border border-medical-500/25 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-medical-500 text-white shadow-inner">
+                </div>
+
+                <!-- Input Plaintext -->
+                <div class="mb-5">
+                    <label class="block text-xs font-semibold text-medical-100 mb-1 tracking-wider uppercase">Pesan Rekam Medis (Plaintext)</label>
+                    <textarea id="inputText" rows="3" placeholder="Contoh: Diabetes Tipe 2 dengan resep Metformin..."
+                        class="w-full bg-black/40 border border-medical-500/25 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-medical-500 text-white shadow-inner resize-none"></textarea>
+                </div>
+
+                <!-- Actions Buttons -->
+                <div class="grid grid-cols-2 gap-4 mb-5">
+                    <button onclick="runEncryption()"
+                        class="bg-medical-600 hover:bg-medical-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg border border-medical-500/35 hover:scale-[1.02] active:scale-[0.98] transition duration-200 uppercase text-xs tracking-wider">
+                        🔒 Enkripsi Data
+                    </button>
+                    <button onclick="runDecryption()"
+                        class="bg-zinc-800 hover:bg-zinc-700 text-gray-200 font-bold py-2.5 px-4 rounded-xl shadow-lg border border-zinc-700 hover:scale-[1.02] active:scale-[0.98] transition duration-200 uppercase text-xs tracking-wider">
+                        🔓 Dekripsi Data
+                    </button>
+                </div>
+
+                <!-- Outputs -->
+                <div class="border-t border-medical-500/10 pt-4 flex flex-col gap-4">
+                    <!-- Ciphertext Output -->
+                    <div>
+                        <label class="block text-xs font-semibold text-medical-500 mb-1 tracking-wider uppercase">Hasil Enkripsi (Base64)</label>
+                        <div class="flex items-center gap-2">
+                            <div id="outputTextBase64" class="flex-1 bg-black/50 border border-medical-500/10 rounded-lg p-3 text-xs font-mono break-all text-medical-100 min-h-[40px] select-all shadow-inner">
+                                [Belum dienkripsi]
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decrypted Output -->
+                    <div>
+                        <label class="block text-xs font-semibold text-green-400 mb-1 tracking-wider uppercase">Hasil Dekripsi (Plaintext)</label>
+                        <div id="outputTextDecrypted" class="bg-black/50 border border-green-500/15 rounded-lg p-3 text-sm text-green-100 min-h-[40px] shadow-inner">
+                            [Belum didekripsi]
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conceptual Explainer Card -->
+            <div class="glass-card rounded-2xl p-6">
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-medical-500/10 pb-2">
+                    <span>💡</span> Mengapa Camellia Cipher?
+                </h2>
+                <div class="text-xs md:text-sm text-gray-400 leading-relaxed flex flex-col gap-3">
+                    <p>
+                        Dalam sistem <strong class="text-medical-100">SecureMedis</strong>, data medis sensitif pasien dilindungi secara <strong class="text-white">End-to-End</strong>. Artinya, data dienkripsi sebelum dikirim dan disimpan ke cloud database Supabase.
+                    </p>
+                    <div class="p-3 bg-medical-900/20 border border-medical-500/10 rounded-xl">
+                        <strong class="text-medical-500 block mb-1">Flow Pengamanan:</strong>
+                        <ol class="list-decimal list-inside text-xs text-medical-100/90 flex flex-col gap-1">
+                            <li>Dokter mengetik rekam medis (Plaintext).</li>
+                            <li>Aplikasi melakukan <strong>Camellia Encryption</strong> secara lokal.</li>
+                            <li>Hasil enkripsi (Ciphertext) dikirim ke Supabase.</li>
+                            <li>Pasien login & mengunduh data terenkripsi.</li>
+                            <li>Aplikasi melakukan <strong>Camellia Decryption</strong> secara lokal di HP pasien.</li>
+                        </ol>
+                    </div>
+                    <p>
+                        Jika admin Supabase mencoba melihat database secara langsung, mereka hanya akan melihat string acak seperti di atas, bukan rekam medis medis aslinya.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Visual Timeline -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+            
+            <!-- Timeline Visualizer Card -->
+            <div class="glass-card rounded-2xl p-6 flex-1 flex flex-col h-[750px]">
+                <div class="flex items-center justify-between border-b border-medical-500/10 pb-2 mb-4">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <span>🧩</span> Feistel Round Visualizer (Blok 1)
+                    </h2>
+                    <span class="text-xs text-medical-500 font-mono tracking-widest uppercase" id="blockInfo">Block 1: 0/0 byte</span>
+                </div>
+
+                <div class="text-xs text-gray-400 mb-3 leading-snug">
+                    Klik tombol <strong>Enkripsi Data</strong> di sebelah kiri untuk melihat pembagian blok data 128-bit, pembuatan subkey, dan jalannya 18 putaran (rounds) Feistel Network secara interaktif.
+                </div>
+
+                <!-- Simulation Output -->
+                <div id="roundsTimeline" class="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-4 pr-1">
+                    <div class="h-full flex items-center justify-center text-gray-500 text-sm italic">
+                        [Jalankan simulasi enkripsi untuk memunculkan visualisasi alur algoritma Feistel Camellia]
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto mt-12 text-center text-xs text-gray-600 border-t border-medical-500/5 pt-6 pb-12">
+        SecureMedis - Sistem Pengamanan Rekam Medis &copy; 2026. Dikembangkan untuk keperluan edukasi Keamanan Informasi.
+    </footer>
+
+    <!-- Camellia JS Implementation -->
+    <script>
+        // SBOX tabel substitusi asli Camellia
+        const SBOX1 = [
+            112, 130,  44, 236, 179,  39, 192, 229, 228, 133,  87,  53, 234,  12, 174,  65,
+             35, 239, 107, 147,  69,  25, 165,  33, 237,  14,  79,  78,  29, 101, 146, 189,
+            134, 184, 175, 143, 124, 235,  31, 206,  62,  48, 220,  95,  94, 197,  11,  26,
+            166, 225,  57, 202, 213,  71,  93,  61, 217,   1,  90, 214,  81,  86, 108,  77,
+            139,  13, 154, 102, 251, 204, 176,  45, 116,  18,  43,  32, 240, 177, 132, 153,
+            223,  76, 203, 194,  52, 126, 118,   5, 109, 183, 169,  49, 209,  23,   4, 215,
+             20,  88,  58,  97, 222,  27,  17,  28,  50,  15, 156,  22,  83,  24, 242,  34,
+            254,  68, 207, 178, 195, 181, 122, 145,  36,   8, 232, 168,  96, 252, 105,  80,
+            170, 208, 160, 125, 161, 137,  98, 151,  84,  91,  30, 149, 224, 255, 100, 210,
+             16, 196,   0,  72, 163, 247, 117, 219, 138,   3, 230, 218,   9,  63, 221, 148,
+            135,  92, 131,   2, 205,  74, 144,  51, 115, 103, 246, 243, 157, 127, 191, 226,
+             82, 155, 216,  38, 200,  55, 198,  59, 129, 150, 111,  75,  19, 190,  99,  46,
+            233, 121, 167, 140, 159, 110, 188, 142,  41, 245, 249, 182,  47, 253, 180,  89,
+            120, 152,   6, 106, 231,  70, 113, 186, 212,  37, 171,  66, 136, 162, 141, 250,
+            114,   7, 185,  85, 248, 238, 172,  10,  54,  73,  42, 104,  60,  56, 241, 164,
+             64,  40, 211, 123, 187, 201,  67, 193,  21, 227, 173, 244, 119, 199, 128, 158
+        ];
+
+        // SBOX dirotasi dan di-shift untuk kecepatan dan visualisasi
+        const SBOX2 = new Uint8Array(256);
+        const SBOX3 = new Uint8Array(256);
+        const SBOX4 = new Uint8Array(256);
+        for (let i = 0; i < 256; i++) {
+            const v = SBOX1[i];
+            SBOX2[i] = ((v << 1) | (v >> 7)) & 0xFF;
+            SBOX3[i] = ((v >> 1) | (v << 7)) & 0xFF;
+            SBOX4[i] = SBOX1[((i << 1) | (i >> 7)) & 0xFF];
+        }
+
+        const SIGMA = [
+            [0xA09E667Fn, 0x3BCC908Bn],
+            [0xB67AE879n, 0x4F3108A4n],
+            [0xB2FB1366n, 0xEA397F2Fn],
+            [0xC4BEA1DBn, 0xA8599294n],
+            [0xA08FAE9Bn, 0xBC394BD8n],
+            [0xBEF85F0En, 0xCA7CBC72n]
+        ];
+
+        // P-Function (MDS Diffusion)
+        function pFunction(x) {
+            const s = new Uint8Array(8);
+            s[0] = SBOX1[Number((x >> 56n) & 0xFFn)];
+            s[1] = SBOX2[Number((x >> 48n) & 0xFFn)];
+            s[2] = SBOX3[Number((x >> 40n) & 0xFFn)];
+            s[3] = SBOX4[Number((x >> 32n) & 0xFFn)];
+            s[4] = SBOX2[Number((x >> 24n) & 0xFFn)];
+            s[5] = SBOX3[Number((x >> 16n) & 0xFFn)];
+            s[6] = SBOX4[Number((x >> 8n) & 0xFFn)];
+            s[7] = SBOX1[Number(x & 0xFFn)];
+
+            const t = new Uint8Array(8);
+            t[0] = s[0] ^ s[2] ^ s[3] ^ s[5] ^ s[6] ^ s[7];
+            t[1] = s[0] ^ s[1] ^ s[3] ^ s[4] ^ s[6] ^ s[7];
+            t[2] = s[0] ^ s[1] ^ s[2] ^ s[4] ^ s[5] ^ s[7];
+            t[3] = s[1] ^ s[2] ^ s[3] ^ s[4] ^ s[5] ^ s[6];
+            t[4] = s[0] ^ s[1] ^ s[5] ^ s[6] ^ s[7];
+            t[5] = s[1] ^ s[2] ^ s[4] ^ s[6] ^ s[7];
+            t[6] = s[2] ^ s[3] ^ s[4] ^ s[5] ^ s[7];
+            t[7] = s[0] ^ s[3] ^ s[4] ^ s[5] ^ s[6];
+
+            let result = 0n;
+            for (let i = 0; i < 8; i++) {
+                result = (result << 8n) | BigInt(t[i]);
+            }
+            return result;
+        }
+
+        function fFunction(f, ke) {
+            return pFunction(f ^ ke);
+        }
+
+        // FL/FL-inv 32-bit rotasi
+        function rotateLeft32(val, amount) {
+            return ((val << amount) | (val >>> (32 - amount))) & 0xFFFFFFFF;
+        }
+
+        function flFunction(flIn, ke) {
+            let x1 = Number((flIn >> 32n) & 0xFFFFFFFFn);
+            let x2 = Number(flIn & 0xFFFFFFFFn);
+            const keL = Number((ke >> 32n) & 0xFFFFFFFFn);
+            const keR = Number(ke & 0xFFFFFFFFn);
+            
+            x2 = (x2 ^ rotateLeft32(x1 & keL, 1)) >>> 0;
+            x1 = (x1 ^ (x2 | keR)) >>> 0;
+            
+            return (BigInt(x1) << 32n) | BigInt(x2);
+        }
+
+        function flInvFunction(flIn, ke) {
+            let x1 = Number((flIn >> 32n) & 0xFFFFFFFFn);
+            let x2 = Number(flIn & 0xFFFFFFFFn);
+            const keL = Number((ke >> 32n) & 0xFFFFFFFFn);
+            const keR = Number(ke & 0xFFFFFFFFn);
+
+            x1 = (x1 ^ (x2 | keR)) >>> 0;
+            x2 = (x2 ^ rotateLeft32(x1 & keL, 1)) >>> 0;
+
+            return (BigInt(x1) << 32n) | BigInt(x2);
+        }
+
+        // Rotasi Kiri 128-bit key
+        function rotL128(kl, kr, n) {
+            let combined = (kl << 64n) | kr;
+            let rotated = ((combined << BigInt(n)) | (combined >> BigInt(128 - n))) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFn;
+            return [
+                rotated >> 64n,
+                rotated & 0xFFFFFFFFFFFFFFFFn
+            ];
+        }
+
+        // Key Schedule Generator (128-bit key)
+        function keySchedule(keyBytes) {
+            function bytesToLong(b, off) {
+                let v = 0n;
+                for (let i = 0; i < 8; i++) v = (v << 8n) | BigInt(b[off + i]);
+                return v;
+            }
+
+            const kl = bytesToLong(keyBytes, 0);
+            const kr = bytesToLong(keyBytes, 8);
+
+            let d1 = kl ^ kr;
+            let d2 = 0n;
+
+            d2 = d2 ^ fFunction(d1, SIGMA[0][0]);
+            d1 = d1 ^ fFunction(d2, SIGMA[1][0]);
+            d1 = d1 ^ kl;
+            d2 = d2 ^ kr;
+            d2 = d2 ^ fFunction(d1, SIGMA[2][0]);
+            d1 = d1 ^ fFunction(d2, SIGMA[3][0]);
+
+            const kaL = d1;
+            const kaR = d2;
+
+            const k = new Array(18);
+            const ke = new Array(4);
+            const kw = new Array(4);
+
+            kw[0] = kl; kw[1] = kr;
+            k[0] = kaL; k[1] = kaR;
+
+            let rot = rotL128(kl, kr, 15);
+            k[2] = rot[0]; k[3] = rot[1];
+
+            rot = rotL128(kaL, kaR, 15);
+            k[4] = rot[0]; k[5] = rot[1];
+
+            rot = rotL128(kaL, kaR, 30);
+            ke[0] = rot[0]; ke[1] = rot[1];
+
+            rot = rotL128(kl, kr, 45);
+            k[6] = rot[0]; k[7] = rot[1];
+
+            rot = rotL128(kaL, kaR, 45);
+            k[8] = rot[0];
+
+            rot = rotL128(kl, kr, 77);
+            k[9] = rot[1];
+
+            rot = rotL128(kl, kr, 94);
+            k[10] = rot[0]; k[11] = rot[1];
+
+            rot = rotL128(kaL, kaR, 94);
+            ke[2] = rot[0]; ke[3] = rot[1];
+
+            rot = rotL128(kl, kr, 111);
+            k[12] = rot[0]; k[13] = rot[1];
+
+            rot = rotL128(kaL, kaR, 111);
+            k[14] = rot[0]; k[15] = rot[1];
+
+            rot = rotL128(kl, kr, 127);
+            k[16] = rot[0]; k[17] = rot[1];
+
+            rot = rotL128(kaL, kaR, 94);
+            kw[2] = rot[0]; kw[3] = rot[1];
+
+            return { k, ke, kw };
+        }
+
+        // Enkripsi 1 block (16 byte) + visual data tracking
+        function encryptBlockVisual(blockBytes, ks) {
+            function bytesToLong(b, off) {
+                let v = 0n;
+                for (let i = 0; i < 8; i++) v = (v << 8n) | BigInt(b[off + i]);
+                return v;
+            }
+
+            let d1 = bytesToLong(blockBytes, 0);
+            let d2 = bytesToLong(blockBytes, 8);
+
+            const steps = [];
+
+            // Pre-whitening
+            steps.push({
+                name: "Pre-Whitening (KW1, KW2)",
+                d1Before: d1,
+                d2Before: d2,
+                subkey1: ks.kw[0],
+                subkey2: ks.kw[1],
+                d1After: d1 ^ ks.kw[0],
+                d2After: d2 ^ ks.kw[1],
+                type: "whitening"
+            });
+
+            d1 = d1 ^ ks.kw[0];
+            d2 = d2 ^ ks.kw[1];
+
+            // Rounds 1-6
+            for (let round = 1; round <= 6; round++) {
+                const subkey = ks.k[round - 1];
+                const prevD1 = d1;
+                const prevD2 = d2;
+                if (round % 2 !== 0) {
+                    d2 = d2 ^ fFunction(d1, subkey);
+                } else {
+                    d1 = d1 ^ fFunction(d2, subkey);
+                }
+                steps.push({
+                    name: `Round ${round} (Feistel)`,
+                    d1Before: prevD1,
+                    d2Before: prevD2,
+                    subkey: subkey,
+                    d1After: d1,
+                    d2After: d2,
+                    type: "feistel"
+                });
+            }
+
+            // FL Layer 1 after round 6
+            const prevD1_fl1 = d1;
+            const prevD2_fl1 = d2;
+            d1 = flFunction(d1, ks.ke[0]);
+            d2 = flInvFunction(d2, ks.ke[1]);
+            steps.push({
+                name: "FL / FL-Inv Layer 1",
+                d1Before: prevD1_fl1,
+                d2Before: prevD2_fl1,
+                subkey1: ks.ke[0],
+                subkey2: ks.ke[1],
+                d1After: d1,
+                d2After: d2,
+                type: "fl"
+            });
+
+            // Rounds 7-12
+            for (let round = 7; round <= 12; round++) {
+                const subkey = ks.k[round - 1];
+                const prevD1 = d1;
+                const prevD2 = d2;
+                if (round % 2 !== 0) {
+                    d2 = d2 ^ fFunction(d1, subkey);
+                } else {
+                    d1 = d1 ^ fFunction(d2, subkey);
+                }
+                steps.push({
+                    name: `Round ${round} (Feistel)`,
+                    d1Before: prevD1,
+                    d2Before: prevD2,
+                    subkey: subkey,
+                    d1After: d1,
+                    d2After: d2,
+                    type: "feistel"
+                });
+            }
+
+            // FL Layer 2 after round 12
+            const prevD1_fl2 = d1;
+            const prevD2_fl2 = d2;
+            d1 = flFunction(d1, ks.ke[2]);
+            d2 = flInvFunction(d2, ks.ke[3]);
+            steps.push({
+                name: "FL / FL-Inv Layer 2",
+                d1Before: prevD1_fl2,
+                d2Before: prevD2_fl2,
+                subkey1: ks.ke[2],
+                subkey2: ks.ke[3],
+                d1After: d1,
+                d2After: d2,
+                type: "fl"
+            });
+
+            // Rounds 13-18
+            for (let round = 13; round <= 18; round++) {
+                const subkey = ks.k[round - 1];
+                const prevD1 = d1;
+                const prevD2 = d2;
+                if (round % 2 !== 0) {
+                    d2 = d2 ^ fFunction(d1, subkey);
+                } else {
+                    d1 = d1 ^ fFunction(d2, subkey);
+                }
+                steps.push({
+                    name: `Round ${round} (Feistel)`,
+                    d1Before: prevD1,
+                    d2Before: prevD2,
+                    subkey: subkey,
+                    d1After: d1,
+                    d2After: d2,
+                    type: "feistel"
+                });
+            }
+
+            // Post-whitening
+            steps.push({
+                name: "Post-Whitening (KW3, KW4)",
+                d1Before: d1,
+                d2Before: d2,
+                subkey1: ks.kw[2],
+                subkey2: ks.kw[3],
+                d1After: d1 ^ ks.kw[3],
+                d2After: d2 ^ ks.kw[2],
+                type: "whitening"
+            });
+
+            let finalD1 = d1 ^ ks.kw[3];
+            let finalD2 = d2 ^ ks.kw[2];
+
+            const out = new Uint8Array(16);
+            function longToBytes(v, b, off) {
+                for (let i = 7; i >= 0; i--) {
+                    b[off + (7 - i)] = Number((v >> BigInt(i * 8)) & 0xFFn);
+                }
+            }
+            longToBytes(finalD2, out, 0);
+            longToBytes(finalD1, out, 8);
+
+            return { ciphertext: out, steps };
+        }
+
+        // Dekripsi block tunggal
+        function decryptBlock(blockBytes, ks) {
+            function bytesToLong(b, off) {
+                let v = 0n;
+                for (let i = 0; i < 8; i++) v = (v << 8n) | BigInt(b[off + i]);
+                return v;
+            }
+
+            let d1 = bytesToLong(blockBytes, 0);
+            let d2 = bytesToLong(blockBytes, 8);
+
+            // Pre-whitening (dekripsi menggunakan subkey pasca-whitening terbalik)
+            d1 = d1 ^ ks.kw[3];
+            d2 = d2 ^ ks.kw[2];
+
+            // Putaran 18 ke 13 (Feistel terbalik)
+            for (let round = 18; round >= 13; round--) {
+                const subkey = ks.k[round - 1];
+                if (round % 2 !== 0) {
+                    d2 = d2 ^ fFunction(d1, subkey);
+                } else {
+                    d1 = d1 ^ fFunction(d2, subkey);
+                }
+            }
+
+            // FL layer terbalik (menggunakan flInv untuk fl, dan fl untuk flInv)
+            d1 = flInvFunction(d1, ks.ke[2]);
+            d2 = flFunction(d2, ks.ke[3]);
+
+            // Putaran 12 ke 7
+            for (let round = 12; round >= 7; round--) {
+                const subkey = ks.k[round - 1];
+                if (round % 2 !== 0) {
+                    d2 = d2 ^ fFunction(d1, subkey);
+                } else {
+                    d1 = d1 ^ fFunction(d2, subkey);
+                }
+            }
+
+            // FL layer terbalik
+            d1 = flInvFunction(d1, ks.ke[0]);
+            d2 = flFunction(d2, ks.ke[1]);
+
+            // Putaran 6 ke 1
+            for (let round = 6; round >= 1; round--) {
+                const subkey = ks.k[round - 1];
+                if (round % 2 !== 0) {
+                    d2 = d2 ^ fFunction(d1, subkey);
+                } else {
+                    d1 = d1 ^ fFunction(d2, subkey);
+                }
+            }
+
+            // Post-whitening terbalik
+            let finalD1 = d1 ^ ks.kw[0];
+            let finalD2 = d2 ^ ks.kw[1];
+
+            const out = new Uint8Array(16);
+            function longToBytes(v, b, off) {
+                for (let i = 7; i >= 0; i--) {
+                    b[off + (7 - i)] = Number((v >> BigInt(i * 8)) & 0xFFn);
+                }
+            }
+            longToBytes(finalD2, out, 0);
+            longToBytes(finalD1, out, 8);
+            return out;
+        }
+
+        // ECB Mode helper untuk string padding & base64
+        function encryptECB(plaintext, keyBytes) {
+            const ks = keySchedule(keyBytes);
+            const dataBytes = new TextEncoder().encode(plaintext);
+
+            // PKCS7 Padding
+            const padLen = 16 - (dataBytes.length % 16);
+            const padded = new Uint8Array(dataBytes.length + padLen);
+            padded.set(dataBytes);
+            padded.fill(padLen, dataBytes.length);
+
+            const out = new Uint8Array(padded.length);
+            let firstBlockSteps = null;
+
+            for (let i = 0; i < padded.length; i += 16) {
+                const block = padded.slice(i, i + 16);
+                const res = encryptBlockVisual(block, ks);
+                if (i === 0) firstBlockSteps = res.steps;
+                out.set(res.ciphertext, i);
+            }
+
+            const base64 = btoa(String.fromCharCode.apply(null, out));
+            return { base64, firstBlockSteps, dataLength: dataBytes.length };
+        }
+
+        function decryptECB(base64, keyBytes) {
+            const ks = keySchedule(keyBytes);
+            const dataBytes = new Uint8Array(atob(base64).split("").map(c => c.charCodeAt(0)));
+
+            if (dataBytes.length % 16 !== 0) {
+                throw new Error("Panjang ciphertext tidak valid (harus kelipatan 16 byte)");
+            }
+
+            const out = new Uint8Array(dataBytes.length);
+            for (let i = 0; i < dataBytes.length; i += 16) {
+                const block = dataBytes.slice(i, i + 16);
+                const dec = decryptBlock(block, ks);
+                out.set(dec, i);
+            }
+
+            // PKCS7 Unpadding
+            const padLen = out[out.length - 1];
+            if (padLen < 1 || padLen > 16) return new TextDecoder().decode(out);
+            for (let i = out.length - padLen; i < out.length; i++) {
+                if (out[i] !== padLen) return new TextDecoder().decode(out);
+            }
+
+            return new TextDecoder().decode(out.slice(0, out.length - padLen));
+        }
+
+        // UI & Simulasi Controller
+        function getBytesFromString(str, padToSize = 16) {
+            const bytes = new TextEncoder().encode(str);
+            if (bytes.length === padToSize) return bytes;
+            const res = new Uint8Array(padToSize);
+            res.set(bytes.slice(0, padToSize));
+            return res;
+        }
+
+        function bigIntToHex64(v) {
+            return v.toString(16).toUpperCase().padStart(16, '0');
+        }
+
+        function runEncryption() {
+            const textInput = document.getElementById("inputText").value;
+            const keyInput = document.getElementById("inputKey").value;
+
+            if (!textInput.trim()) {
+                alert("Ketikkan pesan medis yang akan dienkripsi!");
+                return;
+            }
+
+            const keyBytes = getBytesFromString(keyInput, 16);
+            
+            try {
+                const result = encryptECB(textInput, keyBytes);
+                
+                // Set output Base64
+                document.getElementById("outputTextBase64").textContent = result.base64;
+                document.getElementById("blockInfo").textContent = `Block 1: 16/16 byte (Total: ${Math.ceil((textInput.length + 1) / 16)} blok)`;
+
+                // Render Timeline putaran Camellia
+                renderTimeline(result.firstBlockSteps);
+            } catch (e) {
+                alert("Gagal Enkripsi: " + e.message);
+            }
+        }
+
+        function runDecryption() {
+            const base64Input = document.getElementById("outputTextBase64").textContent.trim();
+            const keyInput = document.getElementById("inputKey").value;
+
+            if (base64Input === "[Belum dienkripsi]" || !base64Input) {
+                alert("Silakan lakukan Enkripsi terlebih dahulu untuk menghasilkan Base64!");
+                return;
+            }
+
+            const keyBytes = getBytesFromString(keyInput, 16);
+
+            try {
+                const plaintext = decryptECB(base64Input, keyBytes);
+                document.getElementById("outputTextDecrypted").textContent = plaintext;
+            } catch (e) {
+                document.getElementById("outputTextDecrypted").textContent = "Gagal Dekripsi: " + e.message;
+            }
+        }
+
+        function renderTimeline(steps) {
+            const container = document.getElementById("roundsTimeline");
+            container.innerHTML = "";
+
+            steps.forEach((step, index) => {
+                const card = document.createElement("div");
+                card.className = "p-4 rounded-xl border border-medical-500/15 bg-black/30 hover:border-medical-500/30 transition duration-200";
+
+                let badgeColor = "bg-medical-500/10 text-medical-100 border border-medical-500/25";
+                if (step.type === "whitening") {
+                    badgeColor = "bg-purple-500/10 text-purple-200 border border-purple-500/25";
+                } else if (step.type === "fl") {
+                    badgeColor = "bg-amber-500/10 text-amber-200 border border-amber-500/25";
+                }
+
+                let detailsHtml = "";
+
+                if (step.type === "feistel") {
+                    detailsHtml = `
+                        <div class="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2 border-t border-white/5 pt-2 text-[11px] font-mono text-gray-400">
+                            <div>
+                                <span class="text-medical-500 font-semibold block mb-0.5">Input Left (L):</span>
+                                <span>${bigIntToHex64(step.d1Before)}</span>
+                            </div>
+                            <div>
+                                <span class="text-medical-500 font-semibold block mb-0.5">Input Right (R):</span>
+                                <span>${bigIntToHex64(step.d2Before)}</span>
+                            </div>
+                            <div>
+                                <span class="text-purple-400 font-semibold block mb-0.5">Subkey Us:</span>
+                                <span>${bigIntToHex64(step.subkey)}</span>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-[11px] font-mono text-medical-100/90 bg-medical-900/10 border border-medical-500/5 p-2 rounded-lg">
+                            <span class="font-semibold text-white">Transformasi Putaran:</span><br>
+                            F-Function: P-Layer( S-Box( L XOR Subkey ) ) <br>
+                            XOR hasil F-Function ke R untuk putaran selanjutnya.
+                        </div>
+                        <div class="mt-1.5 grid grid-cols-2 gap-2 text-[10px] font-mono text-gray-500">
+                            <div>Output L: ${bigIntToHex64(step.d1After)}</div>
+                            <div>Output R: ${bigIntToHex64(step.d2After)}</div>
+                        </div>
+                    `;
+                } else if (step.type === "whitening") {
+                    detailsHtml = `
+                        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 border-t border-white/5 pt-2 text-[11px] font-mono text-gray-400">
+                            <div>
+                                <span class="text-purple-400 font-semibold block mb-0.5">Subkey Kiri (KW):</span>
+                                <span>${bigIntToHex64(step.subkey1)}</span>
+                            </div>
+                            <div>
+                                <span class="text-purple-400 font-semibold block mb-0.5">Subkey Kanan (KW):</span>
+                                <span>${bigIntToHex64(step.subkey2)}</span>
+                            </div>
+                        </div>
+                        <div class="mt-1 text-[11px] font-mono text-gray-500">
+                            Mengacak L & R awal/akhir dengan XOR bitwise kunci (Pre/Post-Whitening).
+                        </div>
+                    `;
+                } else if (step.type === "fl") {
+                    detailsHtml = `
+                        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 border-t border-white/5 pt-2 text-[11px] font-mono text-gray-400">
+                            <div>
+                                <span class="text-amber-400 font-semibold block mb-0.5">Subkey FL (KE):</span>
+                                <span>${bigIntToHex64(step.subkey1)}</span>
+                            </div>
+                            <div>
+                                <span class="text-amber-400 font-semibold block mb-0.5">Subkey FL-Inv (KE):</span>
+                                <span>${bigIntToHex64(step.subkey2)}</span>
+                            </div>
+                        </div>
+                        <div class="mt-1 text-[11px] font-mono text-amber-200/70 bg-amber-500/5 p-2 rounded-lg">
+                            Fungsi Linear (FL) menyisipkan transformasi linear tambahan untuk menghambat cryptanalysis matematika terstruktur.
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-sm font-bold text-white tracking-wide">${step.name}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeColor}">${step.type.toUpperCase()}</span>
+                    </div>
+                    ${detailsHtml}
+                `;
+                container.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>

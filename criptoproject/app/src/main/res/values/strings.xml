@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SecureMedis</string>
+    <string name="login">Masuk</string>
+    <string name="logout">Keluar</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="diagnosis">Diagnosis</string>
+    <string name="resep">Resep</string>
+    <string name="catatan">Catatan</string>
+    <string name="save">Simpan</string>
+    <string name="cancel">Batal</string>
+    <string name="delete">Hapus</string>
+    <string name="rekam_medis">Rekam Medis</string>
+    <string name="no_data">Tidak ada data</string>
+</resources>
